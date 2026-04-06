@@ -1,0 +1,6 @@
+Module template:
+module ALU(input [7:0] A, [7:0] B, [3:0] operation, output [7:0] C, Z, N, V);
+
+Operation Implementation:
+Robi: Addition, Multiplication, AND, OR, LEFT SHIFT
+Cosmin: Subtraction, Division, XOR, RIGHT SHIFT
