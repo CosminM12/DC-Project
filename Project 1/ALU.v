@@ -27,9 +27,10 @@ module ALU(
     // -------------------------------------------------------
     // Functional unit result wires
     // -------------------------------------------------------
-    wire [7:0] res_and, res_or, res_add, res_mul, res_shl;
+    wire [7:0] res_and, res_or, res_xor, res_add, res_sub, res_mul, res_shl, res_shr;
     wire       adder_cout;
     wire       adder_V;
+    wire       sub_V;
 
     // -------------------------------------------------------
     // Decoder enable signals (one-hot, indexed 0..8)
@@ -39,18 +40,25 @@ module ALU(
     // -------------------------------------------------------
     // Instantiate functional units
     // -------------------------------------------------------
-    and8                  u_and(.A(A), .B(B), .C(res_and));
+    and8                  u_and (.A(A), .B(B), .C(res_and));
 
     or8                   u_or (.A(A), .B(B), .C(res_or));
+
+    xor8                  u_xor (.A(A), .B(B), .C(res_xor));
 
     adder_8bit            u_add(.A(A), .B(B),
                                 .Sum(res_add),
                                 .Cout(adder_cout),
                                 .overflow_V(adder_V));
 
+    subtractor_8bit        u_sub(.A(A), .B(B), .Diff(res_sub),
+                                 .overflow(sub_V));
+
     array_multiplier_8bit u_mul(.A(A), .B(B), .P(res_mul));
 
     barrel_shifter_left   u_shl(.A(A), .shift_amt(B[2:0]), .C(res_shl));
+
+    barrel_shifter_right  u_shr(.A(A), .shift_amt(B[2:0]), .C(res_shr));
 
     // -------------------------------------------------------
     // Operation decoder
@@ -67,10 +75,10 @@ module ALU(
         .res_add(res_add),
         .res_mul(res_mul),
         .res_shl(res_shl),
-        .res_sub(8'b0),     // Cosmin: replace with actual result
+        .res_sub(res_sub),
         .res_div(8'b0),     // Cosmin: replace with actual result
-        .res_xor(8'b0),     // Cosmin: replace with actual result
-        .res_shr(8'b0),     // Cosmin: replace with actual result
+        .res_xor(res_xor),
+        .res_shr(res_shr),
         .en(en),
         .C(C)
     );
