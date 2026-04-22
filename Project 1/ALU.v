@@ -6,10 +6,10 @@
 //   0010 = ADD        (Robi)
 //   0011 = MUL        (Robi)  — lower 8 bits of A*B
 //   0100 = SHL        (Robi)  — A shifted left by B[2:0]
-//   0101 = SUB        (Cosmin — placeholder: outputs 0)
-//   0110 = DIV        (Cosmin — placeholder: outputs 0)
-//   0111 = XOR        (Cosmin — placeholder: outputs 0)
-//   1000 = SHR        (Cosmin — placeholder: outputs 0)
+//   0101 = SUB        (Cosmin)
+//   0110 = DIV        (Cosmin)
+//   0111 = XOR        (Cosmin)
+//   1000 = SHR        (Cosmin)
 //
 // Status flags:
 //   Z — zero:     C == 8'b0
@@ -27,7 +27,10 @@ module ALU(
     // -------------------------------------------------------
     // Functional unit result wires
     // -------------------------------------------------------
-    wire [7:0] res_and, res_or, res_xor, res_add, res_sub, res_mul, res_shl, res_shr;
+    wire [7:0] res_and, res_or, res_xor;
+    wire [7:0] res_add, res_sub, res_mul, res_div;
+    wire [7:0] res_shl, res_shr;
+
     wire       adder_cout;
     wire       adder_V;
     wire       sub_V;
@@ -54,7 +57,9 @@ module ALU(
     subtractor_8bit        u_sub(.A(A), .B(B), .Diff(res_sub),
                                  .overflow(sub_V));
 
-    array_multiplier_8bit u_mul(.A(A), .B(B), .P(res_mul));
+    array_multiplier_8bit  u_mul(.A(A), .B(B), .P(res_mul));
+
+    array_divider_8bit     u_div(.A(A), .B(B), .Q(res_div));
 
     barrel_shifter_left   u_shl(.A(A), .shift_amt(B[2:0]), .C(res_shl));
 
@@ -76,7 +81,7 @@ module ALU(
         .res_mul(res_mul),
         .res_shl(res_shl),
         .res_sub(res_sub),
-        .res_div(8'b0),     // Cosmin: replace with actual result
+        .res_div(res_div),
         .res_xor(res_xor),
         .res_shr(res_shr),
         .en(en),

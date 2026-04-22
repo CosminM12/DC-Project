@@ -1,5 +1,5 @@
 module barrel_shifter_right (input [7:0] A, input [2:0] shift_amt, 
-                             output [7:0] C)
+                             output [7:0] C);
 
     wire [7:0] s0;
     wire [7:0] s1;

@@ -1,4 +1,4 @@
-module xor8 (input [7:0] A, input [7:0] B, output [7:0] C)
+module xor8 (input [7:0] A, input [7:0] B, output [7:0] C);
 
     xor g0(C[0], A[0], B[0]);
     xor g1(C[1], A[1], B[1]);
