@@ -1,5 +1,6 @@
-// 8-bit ripple-carry adder
-// overflow_V = carry_into_bit7 XOR carry_out_of_bit7 (signed overflow flag)
+// 8-bit ripple-carry adder.
+// overflow_V is the signed overflow flag (carry into the sign bit
+// XOR carry out of the sign bit).
 module adder_8bit(
     input  [7:0] A,
     input  [7:0] B,
@@ -7,12 +8,10 @@ module adder_8bit(
     output       Cout,
     output       overflow_V
 );
-    // Carry chain: c[0] = 0 (carry-in), c[1..7] = internal, c[8] = carry-out
-    wire [8:0] c;
+    wire [8:0] c;   // carry chain: c[0] is the carry-in, c[8] the carry-out
 
-    // Tie carry-in to logic 0 using a supply0 net
     supply0 gnd;
-    buf g_cin(c[0], gnd);
+    buf g_cin(c[0], gnd);   // carry-in tied to 0
 
     full_adder fa0(.A(A[0]), .B(B[0]), .Cin(c[0]), .Sum(Sum[0]), .Cout(c[1]));
     full_adder fa1(.A(A[1]), .B(B[1]), .Cin(c[1]), .Sum(Sum[1]), .Cout(c[2]));
@@ -23,9 +22,6 @@ module adder_8bit(
     full_adder fa6(.A(A[6]), .B(B[6]), .Cin(c[6]), .Sum(Sum[6]), .Cout(c[7]));
     full_adder fa7(.A(A[7]), .B(B[7]), .Cin(c[7]), .Sum(Sum[7]), .Cout(c[8]));
 
-    // Route carry-out to output port
     buf g_cout(Cout, c[8]);
-
-    // Signed overflow: V = carry_into_sign_bit XOR carry_out_of_sign_bit
     xor g_overflow(overflow_V, c[7], c[8]);
 endmodule

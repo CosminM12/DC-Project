@@ -1,23 +1,19 @@
-// Status flag generator
-//
-// Z (Zero)     : 1 if the result C is all zeros
-// N (Negative) : 1 if the MSB of C is 1 (2's complement sign bit)
-// V (Overflow) : 1 if a signed overflow occurred in ADD;
-//                0 for all other operations (gated by en_add)
+// Status flag generator.
+//   Z = 1 when the result is zero
+//   N = 1 when the result is negative (MSB = 1)
+//   V = 1 on signed overflow, only for ADD or SUB (gated by en_add / en_sub)
 module flag_gen(
     input  [7:0] C,
-    input        add_overflow_V,  // overflow signal from adder_8bit
-    input        en_add,          // en[2] from decoder — high only during ADD
+    input        add_overflow_V,  // overflow from adder_8bit
+    input        sub_overflow_V,  // overflow from subtractor_8bit
+    input        en_add,          // en[2], high only during ADD
+    input        en_sub,          // en[5], high only during SUB
     output       Z,
     output       N,
     output       V
 );
-    // -------------------------------------------------------
-    // Z: NOR of all bits of C
-    // Implemented as a balanced tree of OR gates + final NOT
-    // -------------------------------------------------------
+    // Z = NOR of all result bits, built as an OR tree plus a final NOT
     wire or01, or23, or45, or67, or0123, or4567, or_all;
-
     or  g_or01  (or01,   C[0], C[1]);
     or  g_or23  (or23,   C[2], C[3]);
     or  g_or45  (or45,   C[4], C[5]);
@@ -27,14 +23,12 @@ module flag_gen(
     or  g_orall (or_all, or0123, or4567);
     not g_Z     (Z,      or_all);
 
-    // -------------------------------------------------------
-    // N: sign bit (MSB) of result
-    // -------------------------------------------------------
+    // N = sign bit of the result
     buf g_N(N, C[7]);
 
-    // -------------------------------------------------------
-    // V: overflow is only meaningful for ADD
-    //    Gate the adder's overflow signal with en_add
-    // -------------------------------------------------------
-    and g_V(V, add_overflow_V, en_add);
+    // V = (adder overflow during ADD) OR (subtractor overflow during SUB)
+    wire v_add, v_sub;
+    and g_Vadd(v_add, add_overflow_V, en_add);
+    and g_Vsub(v_sub, sub_overflow_V, en_sub);
+    or  g_V   (V,     v_add,          v_sub);
 endmodule

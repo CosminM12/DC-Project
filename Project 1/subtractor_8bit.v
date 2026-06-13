@@ -1,9 +1,15 @@
-module subtractor_8bit (input [7:0] A, input [7:0] B, output [7:0] Diff, output overflow);
-
+// 8-bit subtractor: Diff = A - B, computed as A + (~B) + 1.
+// overflow is the signed overflow flag.
+module subtractor_8bit(
+    input  [7:0] A,
+    input  [7:0] B,
+    output [7:0] Diff,
+    output       overflow
+);
     wire [7:0] B_not;
-    wire [8:0] C; //Carry chain
+    wire [8:0] c;   // carry chain
 
-    //Get B negated (1's complement of B)
+    // one's complement of B
     not g_n0(B_not[0], B[0]);
     not g_n1(B_not[1], B[1]);
     not g_n2(B_not[2], B[2]);
@@ -13,11 +19,10 @@ module subtractor_8bit (input [7:0] A, input [7:0] B, output [7:0] Diff, output 
     not g_n6(B_not[6], B[6]);
     not g_n7(B_not[7], B[7]);
 
-    //Make the +1 addition for the 2's complement 
+    // carry-in tied to 1 completes the two's complement (the +1)
     supply1 vcc;
-    buf g_cin(c[0], vcc); //c[0] is always set to 1
+    buf g_cin(c[0], vcc);
 
-    //Add A + (~B) + 1
     full_adder fa0(.A(A[0]), .B(B_not[0]), .Cin(c[0]), .Sum(Diff[0]), .Cout(c[1]));
     full_adder fa1(.A(A[1]), .B(B_not[1]), .Cin(c[1]), .Sum(Diff[1]), .Cout(c[2]));
     full_adder fa2(.A(A[2]), .B(B_not[2]), .Cin(c[2]), .Sum(Diff[2]), .Cout(c[3]));
@@ -28,6 +33,4 @@ module subtractor_8bit (input [7:0] A, input [7:0] B, output [7:0] Diff, output 
     full_adder fa7(.A(A[7]), .B(B_not[7]), .Cin(c[7]), .Sum(Diff[7]), .Cout(c[8]));
 
     xor g_overflow(overflow, c[7], c[8]);
-
-
 endmodule

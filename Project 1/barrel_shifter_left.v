@@ -1,25 +1,15 @@
-// 8-bit logical left barrel shifter
-// Shifts A left by shift_amt[2:0] positions (0 to 7).
-// Built from three stages of 2-to-1 mux instances:
-//   Stage 0: shift by 1 if shift_amt[0] = 1
-//   Stage 1: shift by 2 if shift_amt[1] = 1
-//   Stage 2: shift by 4 if shift_amt[2] = 1
-// Bits shifted in from the right are always 0 (logical shift).
+// 8-bit logical left barrel shifter, C = A << shift_amt (0 to 7).
+// Three mux stages shift by 1, 2 and 4 depending on the bits of shift_amt.
+// Zeros are shifted in from the right.
 module barrel_shifter_left(
     input  [7:0] A,
     input  [2:0] shift_amt,
     output [7:0] C
 );
-    // Intermediate wires after each stage
-    wire [7:0] s0;   // after stage 0
-    wire [7:0] s1;   // after stage 1
+    wire [7:0] s0;   // after the shift-by-1 stage
+    wire [7:0] s1;   // after the shift-by-2 stage
 
-    // -------------------------------------------------------
-    // Stage 0: shift by 1 if shift_amt[0]
-    // s0[i] = A[i]   when shift_amt[0]=0  (no shift)
-    // s0[i] = A[i-1] when shift_amt[0]=1  (shift left 1)
-    // s0[0] gets 0 when shifting (nothing to shift in)
-    // -------------------------------------------------------
+    // stage 0: shift by 1 if shift_amt[0]
     mux2to1 s0_b0(.A(A[0]), .B(1'b0),  .sel(shift_amt[0]), .out(s0[0]));
     mux2to1 s0_b1(.A(A[1]), .B(A[0]),  .sel(shift_amt[0]), .out(s0[1]));
     mux2to1 s0_b2(.A(A[2]), .B(A[1]),  .sel(shift_amt[0]), .out(s0[2]));
@@ -29,11 +19,7 @@ module barrel_shifter_left(
     mux2to1 s0_b6(.A(A[6]), .B(A[5]),  .sel(shift_amt[0]), .out(s0[6]));
     mux2to1 s0_b7(.A(A[7]), .B(A[6]),  .sel(shift_amt[0]), .out(s0[7]));
 
-    // -------------------------------------------------------
-    // Stage 1: shift by 2 if shift_amt[1]
-    // s1[i] = s0[i]   when shift_amt[1]=0
-    // s1[i] = s0[i-2] when shift_amt[1]=1  (bits 0,1 get 0)
-    // -------------------------------------------------------
+    // stage 1: shift by 2 if shift_amt[1]
     mux2to1 s1_b0(.A(s0[0]), .B(1'b0),  .sel(shift_amt[1]), .out(s1[0]));
     mux2to1 s1_b1(.A(s0[1]), .B(1'b0),  .sel(shift_amt[1]), .out(s1[1]));
     mux2to1 s1_b2(.A(s0[2]), .B(s0[0]), .sel(shift_amt[1]), .out(s1[2]));
@@ -43,11 +29,7 @@ module barrel_shifter_left(
     mux2to1 s1_b6(.A(s0[6]), .B(s0[4]), .sel(shift_amt[1]), .out(s1[6]));
     mux2to1 s1_b7(.A(s0[7]), .B(s0[5]), .sel(shift_amt[1]), .out(s1[7]));
 
-    // -------------------------------------------------------
-    // Stage 2: shift by 4 if shift_amt[2]
-    // C[i] = s1[i]   when shift_amt[2]=0
-    // C[i] = s1[i-4] when shift_amt[2]=1  (bits 0..3 get 0)
-    // -------------------------------------------------------
+    // stage 2: shift by 4 if shift_amt[2]
     mux2to1 s2_b0(.A(s1[0]), .B(1'b0),  .sel(shift_amt[2]), .out(C[0]));
     mux2to1 s2_b1(.A(s1[1]), .B(1'b0),  .sel(shift_amt[2]), .out(C[1]));
     mux2to1 s2_b2(.A(s1[2]), .B(1'b0),  .sel(shift_amt[2]), .out(C[2]));
@@ -56,5 +38,4 @@ module barrel_shifter_left(
     mux2to1 s2_b5(.A(s1[5]), .B(s1[1]), .sel(shift_amt[2]), .out(C[5]));
     mux2to1 s2_b6(.A(s1[6]), .B(s1[2]), .sel(shift_amt[2]), .out(C[6]));
     mux2to1 s2_b7(.A(s1[7]), .B(s1[3]), .sel(shift_amt[2]), .out(C[7]));
-
 endmodule

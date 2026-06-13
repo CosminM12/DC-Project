@@ -1,3 +1,4 @@
+// Bitwise AND of two 8-bit operands.
 module and8(
     input  [7:0] A,
     input  [7:0] B,

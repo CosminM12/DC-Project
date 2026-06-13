@@ -1,20 +1,12 @@
-// 8-bit Structural ALU — top-level module
+// Top-level 8-bit ALU.
+// Inputs : two 8-bit operands A and B, a 4-bit operation selector.
+// Outputs: 8-bit result C and the status flags Z (zero), N (negative),
+//          V (signed overflow).
 //
-// Operations (4-bit opcode):
-//   0000 = AND        (Robi)
-//   0001 = OR         (Robi)
-//   0010 = ADD        (Robi)
-//   0011 = MUL        (Robi)  — lower 8 bits of A*B
-//   0100 = SHL        (Robi)  — A shifted left by B[2:0]
-//   0101 = SUB        (Cosmin)
-//   0110 = DIV        (Cosmin)
-//   0111 = XOR        (Cosmin)
-//   1000 = SHR        (Cosmin)
-//
-// Status flags:
-//   Z — zero:     C == 8'b0
-//   N — negative: C[7] (MSB / sign bit)
-//   V — overflow: signed overflow from ADD; 0 for all other ops
+// operation encoding:
+//   0 AND   1 OR   2 ADD   3 MUL   4 SHL
+//   5 SUB   6 DIV  7 XOR   8 SHR
+// MUL returns the low 8 bits of A*B, DIV returns the quotient A/B.
 module ALU(
     input  [7:0] A,
     input  [7:0] B,
@@ -24,80 +16,45 @@ module ALU(
     output       N,
     output       V
 );
-    // -------------------------------------------------------
-    // Functional unit result wires
-    // -------------------------------------------------------
+    // result coming out of each functional unit
     wire [7:0] res_and, res_or, res_xor;
     wire [7:0] res_add, res_sub, res_mul, res_div;
     wire [7:0] res_shl, res_shr;
 
-    wire       adder_cout;
-    wire       adder_V;
-    wire       sub_V;
+    wire adder_cout, adder_V, sub_V;
 
-    // -------------------------------------------------------
-    // Decoder enable signals (one-hot, indexed 0..8)
-    // -------------------------------------------------------
+    // one-hot enable, one bit per operation
     wire [8:0] en;
 
-    // -------------------------------------------------------
-    // Instantiate functional units
-    // -------------------------------------------------------
-    and8                  u_and (.A(A), .B(B), .C(res_and));
-
+    // functional units
+    and8                  u_and(.A(A), .B(B), .C(res_and));
     or8                   u_or (.A(A), .B(B), .C(res_or));
-
-    xor8                  u_xor (.A(A), .B(B), .C(res_xor));
-
-    adder_8bit            u_add(.A(A), .B(B),
-                                .Sum(res_add),
-                                .Cout(adder_cout),
-                                .overflow_V(adder_V));
-
-    subtractor_8bit        u_sub(.A(A), .B(B), .Diff(res_sub),
-                                 .overflow(sub_V));
-
-    array_multiplier_8bit  u_mul(.A(A), .B(B), .P(res_mul));
-
-    array_divider_8bit     u_div(.A(A), .B(B), .Q(res_div));
-
+    xor8                  u_xor(.A(A), .B(B), .C(res_xor));
+    adder_8bit            u_add(.A(A), .B(B), .Sum(res_add), .Cout(adder_cout), .overflow_V(adder_V));
+    subtractor_8bit       u_sub(.A(A), .B(B), .Diff(res_sub), .overflow(sub_V));
+    array_multiplier_8bit u_mul(.A(A), .B(B), .P(res_mul));
+    array_divider_8bit    u_div(.A(A), .B(B), .Q(res_div));
     barrel_shifter_left   u_shl(.A(A), .shift_amt(B[2:0]), .C(res_shl));
-
     barrel_shifter_right  u_shr(.A(A), .shift_amt(B[2:0]), .C(res_shr));
 
-    // -------------------------------------------------------
-    // Operation decoder
-    // -------------------------------------------------------
+    // turn the opcode into the one-hot enable
     decoder_4to9          u_dec(.op(operation), .en(en));
 
-    // -------------------------------------------------------
-    // Result mux — select active operation output
-    // Cosmin's operations are wired to 8'b0 until implemented
-    // -------------------------------------------------------
+    // select the result of the active operation
     result_mux            u_mux(
-        .res_and(res_and),
-        .res_or (res_or),
-        .res_add(res_add),
-        .res_mul(res_mul),
-        .res_shl(res_shl),
-        .res_sub(res_sub),
-        .res_div(res_div),
-        .res_xor(res_xor),
-        .res_shr(res_shr),
-        .en(en),
-        .C(C)
+        .res_and(res_and), .res_or(res_or), .res_add(res_add),
+        .res_mul(res_mul), .res_shl(res_shl), .res_sub(res_sub),
+        .res_div(res_div), .res_xor(res_xor), .res_shr(res_shr),
+        .en(en), .C(C)
     );
 
-    // -------------------------------------------------------
-    // Flag generation
-    // -------------------------------------------------------
+    // status flags (V is only valid for ADD and SUB)
     flag_gen              u_flags(
         .C(C),
         .add_overflow_V(adder_V),
+        .sub_overflow_V(sub_V),
         .en_add(en[2]),
-        .Z(Z),
-        .N(N),
-        .V(V)
+        .en_sub(en[5]),
+        .Z(Z), .N(N), .V(V)
     );
-
 endmodule

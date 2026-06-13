@@ -1,3 +1,4 @@
+// Bitwise OR of two 8-bit operands.
 module or8(
     input  [7:0] A,
     input  [7:0] B,

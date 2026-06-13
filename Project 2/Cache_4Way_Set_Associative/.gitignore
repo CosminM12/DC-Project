@@ -1,0 +1,7 @@
+build/
+sim/
+*.vcd
+*.out
+*.log
+__pycache__/
+tb/mem_data.txt

@@ -1,3 +1,4 @@
+// Half adder: Sum = A xor B, Cout = A and B.
 module half_adder(
     input  A,
     input  B,

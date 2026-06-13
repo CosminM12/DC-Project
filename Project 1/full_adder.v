@@ -1,3 +1,4 @@
+// Full adder built from two half adders.
 module full_adder(
     input  A,
     input  B,
