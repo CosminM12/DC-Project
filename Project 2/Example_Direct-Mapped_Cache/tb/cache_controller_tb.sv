@@ -11,9 +11,8 @@ module cache_controller_tb;
    localparam NBLOCKS        = 1024;
    localparam string MEM_FILE = "tb/mem_data.txt";
 
-   // Clock period is 200 ns (100 ns high, 100 ns low).
+   // 200 ns clock period (100 ns high, 100 ns low).
    localparam int CLK_PERIOD_NS        = 200;
-   // Read miss: IDLE -> MISS -> FETCH -> FILL -> READ_HIT -> IDLE
    localparam int MISS_LATENCY_CYCLES  = 6;
    localparam int HIT_LATENCY_CYCLES   = 2;
 

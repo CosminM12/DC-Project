@@ -1,8 +1,4 @@
-// 4-to-9 operation decoder.
-// Turns the 4-bit opcode into a one-hot enable: en[k] = 1 for opcode k.
-//   en[0] AND  en[1] OR   en[2] ADD  en[3] MUL  en[4] SHL
-//   en[5] SUB  en[6] DIV  en[7] XOR  en[8] SHR
-// Opcodes 9 to 15 leave en = 0, so the ALU result is 0.
+// 4-to-9 decoder — one-hot enable for opcodes 0..8, all zeros for 9..F.
 module decoder_4to9(
     input  [3:0] op,
     output [8:0] en

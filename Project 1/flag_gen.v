@@ -1,7 +1,4 @@
-// Status flag generator.
-//   Z = 1 when the result is zero
-//   N = 1 when the result is negative (MSB = 1)
-//   V = 1 on signed overflow, only for ADD or SUB (gated by en_add / en_sub)
+// Flag generator — Z=1 when result is all zeros, N=MSB, V only for ADD/SUB.
 module flag_gen(
     input  [7:0] C,
     input        add_overflow_V,  // overflow from adder_8bit

@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-// Exhaustive self-checking testbench for array_multiplier_8bit (low 8 bits of A*B).
+// Exhaustive testbench for array_multiplier_8bit — checks low 8 bits of A*B over all 65536 pairs.
 module array_multiplier_8bit_tb;
     reg  [7:0] A, B;
     wire [7:0] P;

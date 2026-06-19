@@ -3,18 +3,9 @@
 `timescale 1ns/1ps
 
 // ---------------------------------------------------------------------------
-// Block-granular main memory model (8 MiB).
-//   depth   : 2^ADDRESS_WIDTH blocks  (ADDRESS_WIDTH = tag+index = 18)
-//   width   : BLOCK_SIZE bits per block (256)
-//
-// Initialisation:
-//   * if FILE is given  -> $readmemh(FILE)
-//   * otherwise         -> each word is set to its own word address, i.e.
-//        mem[block][word] = block * WORDS_PER_BLOCK + word
-//     so a CPU read of word address A returns A. This makes the testbench
-//     self-checking without shipping a multi-megabyte hex file.
-//
-// 1-cycle synchronous read and write (matches the cache FSM's FETCH/REPLACE).
+// Block-granular main memory (8 MiB = 2^18 blocks of 256 bits each).
+// Self-initialises so mem[block][word] == block*8 + word — makes the testbench
+// self-checking without a data file.  One-cycle synchronous read and write.
 // ---------------------------------------------------------------------------
 module memory
   #(parameter ADDRESS_WIDTH   = 18,

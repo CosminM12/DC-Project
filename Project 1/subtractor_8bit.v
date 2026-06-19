@@ -1,5 +1,4 @@
-// 8-bit subtractor: Diff = A - B, computed as A + (~B) + 1.
-// overflow is the signed overflow flag.
+// 8-bit subtractor — two's complement: A + ~B + 1, with signed overflow.
 module subtractor_8bit(
     input  [7:0] A,
     input  [7:0] B,

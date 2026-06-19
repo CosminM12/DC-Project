@@ -1,6 +1,4 @@
-// 8-bit ripple-carry adder.
-// overflow_V is the signed overflow flag (carry into the sign bit
-// XOR carry out of the sign bit).
+// 8-bit ripple-carry adder with signed overflow detection.
 module adder_8bit(
     input  [7:0] A,
     input  [7:0] B,

@@ -1,12 +1,6 @@
-// Top-level 8-bit ALU.
-// Inputs : two 8-bit operands A and B, a 4-bit operation selector.
-// Outputs: 8-bit result C and the status flags Z (zero), N (negative),
-//          V (signed overflow).
-//
-// operation encoding:
-//   0 AND   1 OR   2 ADD   3 MUL   4 SHL
-//   5 SUB   6 DIV  7 XOR   8 SHR
-// MUL returns the low 8 bits of A*B, DIV returns the quotient A/B.
+// 8-bit ALU — structural Verilog.
+// Opcodes: 0=AND 1=OR 2=ADD 3=MUL 4=SHL 5=SUB 6=DIV 7=XOR 8=SHR
+// MUL keeps the low 8 bits, DIV returns the quotient (B=0 gives 0xFF).
 module ALU(
     input  [7:0] A,
     input  [7:0] B,

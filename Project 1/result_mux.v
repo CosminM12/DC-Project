@@ -1,7 +1,5 @@
-// Result multiplexer.
-// Each operation result is ANDed with its one-hot enable, then all the gated
-// results are ORed together per bit. Because exactly one enable is high, the
-// OR simply passes through the selected result (or 0 if no enable is set).
+// Result mux — AND each operation result with its one-hot enable, then OR them together.
+// Only the enabled result passes through; all others become 0.
 module result_mux(
     input  [7:0] res_and,
     input  [7:0] res_or,

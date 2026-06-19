@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
-// Exhaustive self-checking testbench for array_divider_8bit (unsigned Q = A / B).
-// Tests all 256x256 pairs; for B = 0 the hardware returns Q = 0xFF.
+// Exhaustive testbench for array_divider_8bit — checks Q = A/B over all 65536 pairs.
+// B=0 is tracked separately (hardware returns 0xFF).
 module array_divider_8bit_tb;
     reg  [7:0] A, B;
     wire [7:0] Q;

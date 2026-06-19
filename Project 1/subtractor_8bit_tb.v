@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-// Exhaustive self-checking testbench for subtractor_8bit (Diff, signed V).
+// Exhaustive testbench for subtractor_8bit — checks Diff and signed overflow over all 65536 input pairs.
 module subtractor_8bit_tb;
     reg  [7:0] A, B;
     wire [7:0] Diff;

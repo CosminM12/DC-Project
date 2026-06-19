@@ -1,18 +1,8 @@
 `timescale 1ns/1ps
 
-// ---------------------------------------------------------------------------
 // Self-checking testbench for the 4-way set-associative cache.
-//
-// Main memory is initialised so that a read of word address A returns A
-// (see memory.sv), which lets every read be checked against its own address.
-//
-// Coverage:
-//   A. cold read misses + read hits + 4-way associativity (4 tags, 1 set)
-//   B. true-LRU victim selection on a full set
-//   C. write-allocate (write miss) + write-hit data
-//   D. write-back of a dirty victim, verified by re-reading from memory
-//   E. plain write hit on a resident clean line
-// ---------------------------------------------------------------------------
+// Memory initialises so word address A returns A, letting every read verify itself.
+// Covers: cold misses, associativity, true LRU eviction, write-allocate, write-back.
 module cache_controller_tb;
 
    localparam BLOCK_SIZE     = 256;

@@ -1,9 +1,6 @@
 `timescale 1ns/1ps
-// Exhaustive self-checking testbench for the whole ALU.
-// For every valid opcode (0..8) it drives all 256x256 input pairs, computes
-// the expected result and Z/N/V flags with its own reference, and compares
-// against the DUT. It also sweeps the invalid opcodes (9..F), which give C = 0.
-// See TESTBENCHES.md for the compile/run commands.
+// Exhaustive ALU testbench — checks all 256x256 inputs for every valid opcode,
+// plus invalid opcodes 9..F (expected C=0, Z=1).
 module ALU_tb;
 
     localparam [3:0] OP_AND = 4'h0, OP_OR  = 4'h1, OP_ADD = 4'h2,

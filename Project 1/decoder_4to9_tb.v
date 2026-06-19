@@ -1,6 +1,5 @@
 `timescale 1ns/1ps
-// Self-checking testbench for decoder_4to9, all 16 opcodes.
-// op 0..8 give one-hot en[op] = 1; op 9..15 give en = 0.
+// Testbench for decoder_4to9 — checks all 16 opcodes (0..8 one-hot, 9..F all zero).
 module decoder_4to9_tb;
     reg  [3:0] op;
     wire [8:0] en;

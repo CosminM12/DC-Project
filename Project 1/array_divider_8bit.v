@@ -1,9 +1,5 @@
-// 8-bit unsigned restoring array divider, quotient Q = A / B.
-// Eight identical stages process the dividend from the MSB down. The running
-// remainder starts at 0 and stays below B, so it is carried in 8 bits.
-// The final remainder (r0) equals A % B but is not output, since the ALU only
-// needs an 8-bit result. If B = 0 every stage sets its quotient bit, so the
-// result is Q = 0xFF (a defined but meaningless divide-by-zero value).
+// 8-bit unsigned restoring array divider — quotient A / B.
+// Eight cascaded stages process the dividend MSB-first. B=0 returns 0xFF.
 module array_divider_8bit(
     input  [7:0] A,   // dividend
     input  [7:0] B,   // divisor

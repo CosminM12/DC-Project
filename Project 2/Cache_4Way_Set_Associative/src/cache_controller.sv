@@ -3,21 +3,11 @@
 `timescale 1ns/1ps
 
 // ---------------------------------------------------------------------------
-// 32 KiB, 4-way set-associative cache controller.
-//   policy : write-back, write-allocate, true-LRU replacement
-//   block  : 8 words x 32 bit = 256 bit
-//   sets   : 256   (index = 8 bit)
-//   tag    : 10 bit, offset = 3 bit, word address = 21 bit
+// 32 KiB, 4-way set-associative cache — write-back, write-allocate, true LRU.
+// 256 sets × 4 ways, 8-word blocks (256 bits), 32-bit words.
 //
-// CPU side : caddress/cdin/rden/wren -> hit/cdout
-// MM  side : maddress/mdout/mrden/mwren -> mdin  (block granular, 18-bit addr)
-//
-// Storage note: the cache state is kept in *flat* 1-D arrays indexed by
-//   line = set * NWAYS + way
-// rather than 2-D [set][way] arrays. Icarus Verilog cannot read a 2-D unpacked
-// array with variable indices inside an always_* block, so the flat form (a
-// single variable index, exactly like the direct-mapped reference design) is
-// used for portability.
+// Flat 1-D arrays indexed by line = set*NWAYS + way keep Icarus happy
+// (Icarus v12 won't read a 2-D unpacked array with variable indices).
 // ---------------------------------------------------------------------------
 module cache_controller
   #(
@@ -135,13 +125,10 @@ module cache_controller
    assign active_offset = active_addr[BLOCK_OFFSET_MSB:BLOCK_OFFSET_LSB];
    assign set_base      = active_index * NWAYS;     // = active_index << WAY_BITS
 
-   // -----------------------------------------------------------------------
-   // Per-way comparison vectors.
-   // These MUST be continuous assignments: in Icarus an always_* block is not
-   // re-evaluated when an array element it read is written elsewhere, so the
-   // result of a fill would never reach an always_comb hit test. A continuous
-   // assign reading a memory IS re-evaluated on that write.
-   // -----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // Per-way comparison — continuous assigns so a fill immediately updates
+    // the hit/miss combinational logic without waiting for the next clock.
+    // -----------------------------------------------------------------------
    genvar gw;
    generate
       for (gw = 0; gw < NWAYS; gw = gw + 1) begin : g_ways

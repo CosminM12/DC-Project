@@ -1,6 +1,5 @@
-// 8-bit logical right barrel shifter, C = A >> shift_amt (0 to 7).
-// Three mux stages shift by 1, 2 and 4 depending on the bits of shift_amt.
-// Zeros are shifted in from the left.
+// 8-bit logical right barrel shifter — 3 mux stages (shift by 1, 2, 4).
+// Zeros fill in from the left.
 module barrel_shifter_right(
     input  [7:0] A,
     input  [2:0] shift_amt,

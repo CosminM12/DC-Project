@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-// Exhaustive self-checking testbench for adder_8bit (Sum, Cout, signed V).
+// Exhaustive testbench for adder_8bit — checks Sum, Cout, and signed overflow over all 65536 input pairs.
 module adder_8bit_tb;
     reg  [7:0] A, B;
     wire [7:0] Sum;

@@ -1,10 +1,7 @@
-// One stage of an unsigned restoring array divider.
-// Across the chain the running remainder always stays below D, so R_in fits
-// in 8 bits. Each stage:
-//   1. forms the shifted partial remainder S = (R_in << 1) | a   (9 bits)
-//   2. subtracts the divisor: S - D, using S + (~D) + 1
-//   3. the carry-out of that subtraction equals (S >= D) and becomes Q_bit
-//   4. if it fit (Q_bit = 1) keep S - D, otherwise restore the old value S
+// Single stage of a restoring array divider.
+// Shifts in the next dividend bit at the LSB, subtracts the divisor,
+// and uses the carry-out as the quotient bit. If the subtraction
+// underflows, the old partial remainder is restored via mux.
 module div_stage_restoring(
     input  [7:0] R_in,    // remainder from the previous stage (R_in < D)
     input        a,       // next dividend bit shifted in at the LSB

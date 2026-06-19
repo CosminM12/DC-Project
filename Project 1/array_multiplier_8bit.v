@@ -1,8 +1,5 @@
-// 8x8 array multiplier, keeps the low 8 bits of A*B.
-// Partial product pp_i_j = A[j] and B[i] has weight 2^(i+j); only the
-// products with i+j <= 7 reach the low 8 bits. Each row is packed into an
-// 8-bit vector (zero-padded by its weight) and the rows are summed by a
-// chain of 8-bit adders, with the carry-out of each adder discarded.
+// 8x8 array multiplier — low 8 bits of A*B.
+// Partial products are ANDed, packed by row weight, then summed by a chain of adders.
 module array_multiplier_8bit(
     input  [7:0] A,
     input  [7:0] B,

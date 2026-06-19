@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-// Exhaustive self-checking testbench for barrel_shifter_right (C = A >> amt).
+// Exhaustive testbench for barrel_shifter_right — checks all 256 values × 8 shift amounts.
 module barrel_shifter_right_tb;
     reg  [7:0] A;
     reg  [2:0] amt;
